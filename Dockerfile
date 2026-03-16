@@ -38,12 +38,14 @@ RUN apt install -y \
     zlib1g-dev
 
 # install python
-RUN curl https://pyenv.run | bash \
-    echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc \
-    echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc \
-    echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n eval "$(pyenv init -)"\nfi' >> ~/.bashrc \
-    source ~/.bashrc \
-    pyenv install 3.9.13 \
+RUN curl https://pyenv.run | bash 
+RUN echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc && \
+    echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc && \
+    echo 'if command -v pyenv 1>/dev/null 2>&1; then eval "$(pyenv init -)"; fi' >> ~/.bashrc
+
+RUN . ~/.bashrc && \
+    pyenv install 3.9.13 && \
     pyenv global 3.9.13
 
-RUN pip install apycula
+RUN apt install -y python3-apycula
+ 
