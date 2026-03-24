@@ -18,17 +18,17 @@ set -ue
 yosys -p "read_verilog ${VERILOG_FILE}; synth_gowin -json ${JSON_SYNTH}"
 # Place and Route
 nextpnr-himbaechel \
-    --verbose \
     --json ${JSON_SYNTH} \
     --write ${PNR_FILE} \
     --device ${DEVICE} \
     --vopt family=${FAMILY} \
-    --vopt cst=${CST_FILE}
-exit 1
+    --vopt cst=${CST_FILE} \
+    --freq 27
 
+echo "-------------------------------"
 gowin_pack -d ${FAMILY} -o ${FS_FILE} ${PNR_FILE} 
 
-
+exit 1
 # -------- UNTESTED FROM HERE ON --------
 # Program Board
 openFPGALoader -b ${BOARD} ${FS_FILE} -f
