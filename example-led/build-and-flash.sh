@@ -17,9 +17,16 @@ set -ue
 # yosys -p "read_verilog -sv ${VERILOG_FILE}; proc; synth_gowin -json ${JSON_SYNTH}"
 yosys -p "read_verilog ${VERILOG_FILE}; synth_gowin -json ${JSON_SYNTH}"
 # Place and Route
-nextpnr-himbaechel --json ${JSON_SYNTH} --write ${PNR_FILE} --freq 27 --device ${DEVICE} --vopt family=${FAMILY} --vopt cst=${CST_FILE}
-gowin_pack -d ${FAMILY} -o ${FS_FILE} ${PNR_FILE} 
+nextpnr-himbaechel \
+    --verbose \
+    --json ${JSON_SYNTH} \
+    --write ${PNR_FILE} \
+    --device ${DEVICE} \
+    --vopt family=${FAMILY} \
+    --vopt cst=${CST_FILE}
 exit 1
+
+gowin_pack -d ${FAMILY} -o ${FS_FILE} ${PNR_FILE} 
 
 
 # -------- UNTESTED FROM HERE ON --------
