@@ -2,9 +2,11 @@
 
 ### Install `yosys`
 ```
-brew install yosys
-brew install openfpgaloader
-brew install xdot 
+brew install \
+    yosys \
+    openfpgaloader \
+    xdot \
+    verialtor
 ```
 
 > Note: xdot is required by yosys when running `show`
