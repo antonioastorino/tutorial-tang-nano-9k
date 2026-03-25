@@ -32,6 +32,7 @@ done
 
 # Single positional argument
 PROJECT_NAME="$1"
+cd "${PROJECT_NAME}"
 
 if [[ -z "$PROJECT_NAME" ]]; then
     echo "Usage: build-and-run.sh [--verify|--clean] <project_name>"
@@ -41,15 +42,14 @@ fi
 ARTIFACTS_FOLDER=artifacts
 CST_FILE="${PROJECT_NAME}.cst"
 VERILOG_FILE="${PROJECT_NAME}.sv"
-JSON_SYNTH="${ARTIFACTS_FOLDER}${PROJECT_NAME}.json"
-PNR_FILE="${ARTIFACTS_FOLDER}${PROJECT_NAME}_pnr.json"
-FS_FILE="${ARTIFACTS_FOLDER}${PROJECT_NAME}.fs"
+JSON_SYNTH="${ARTIFACTS_FOLDER}/${PROJECT_NAME}.json"
+PNR_FILE="${ARTIFACTS_FOLDER}/${PROJECT_NAME}_pnr.json"
+FS_FILE="${ARTIFACTS_FOLDER}/${PROJECT_NAME}.fs"
 mkdir -p "${ARTIFACTS_FOLDER}"
 
 # Add -sv and `proc` command, not included in the reference documentation
 # yosys -p "read_verilog -sv ${VERILOG_FILE}; proc; synth_gowin -json ${JSON_SYNTH}"
 
-echo $OPT_CLEAN
 if [[ $OPT_CLEAN = true ]]; then
     echo "Cleaning for project '$PROJECT_NAME'"
     rm -rf "$ARTIFACTS_FOLDER"

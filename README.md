@@ -1,6 +1,8 @@
-# Setup FPGA toolchain on MacOS
+# Examples and tools to program Tang Nano 9k FPGA 
 
-### Install `yosys`
+## Dependencies
+
+### From `homebrew`
 ```
 brew install \
     yosys \
@@ -10,7 +12,6 @@ brew install \
 ```
 
 > Note: xdot is required by yosys when running `show`
-
 
 ### Install `nextpnr`
 ```
@@ -27,11 +28,12 @@ With focus on Tang Nano boards, run
 pip3 install apycula --break-system-packages
 mkdir -p build && cd build
 cmake .. -DARCH="himbaechel" -DHIMBAECHEL_UARCH="gowin"
-make -j$(nproc)
+make -j<number_of_threads>
 sudo make install
 ```
 
-## Use Ubuntu X86 docker image
+
+## (Not maintained at the moment) Use Ubuntu X86 docker image on MacOS
 
 ```
 brew install container
@@ -39,8 +41,6 @@ container system start
 container build --tag fpga-dev --file Dockerfile .
 container run -it fpga-dev bash
 ```
-
-## Check VHDL using GHDL
 
 ## Resources
 [Example toolchain](https://github.com/mrLSD/fpga/blob/master/sipeed-tangnano-9k/lcd_screen/Makefile)
