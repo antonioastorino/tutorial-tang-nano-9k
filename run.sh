@@ -56,16 +56,18 @@ if [[ $OPT_CLEAN = true ]]; then
     exit 0
 fi
 
+files=(*.sv)
+
 if [[ $OPT_VERIFY = true ]]; then
     echo "--------------- Verifying ---------------"
-    verilator --lint-only ${VERILOG_FILE}
-    yosys -p "read_verilog ${VERILOG_FILE}; show;"
+    verilator --lint-only *.sv
+    yosys -p "read_verilog $(echo ${files[@]}); hierarchy -top top; show top;"
     echo "--------------- Verifying pass ---------------"
     exit 0
 fi
 
 echo " --------- YOSYS ------- "
-yosys -p "read_verilog ${VERILOG_FILE}; synth_gowin -json ${JSON_SYNTH}"
+yosys -p "read_verilog $(echo ${files[@]}); hierarchy -top top; synth_gowin -json ${JSON_SYNTH}"
 
 echo " --------- PLACE and ROUTE ------- "
 nextpnr-himbaechel \
