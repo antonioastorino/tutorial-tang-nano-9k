@@ -1,4 +1,4 @@
-module led (
+module top (
     input  wire btn_a,      
     input  wire btn_b,      
     output reg [1:0] leds   

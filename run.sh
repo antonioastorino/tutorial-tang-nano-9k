@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-#BOARD="tangnano9k"
+BOARD="tangnano9k"
 FAMILY="GW1N-9C"
 DEVICE="GW1NR-LV9QN88PC6/I5"
 
@@ -8,6 +8,7 @@ setopt +o nomatch
 # Defaults
 OPT_VERIFY=false
 OPT_CLEAN=false
+PROJECT_NAME=""
 
 # Parse flags
 while [[ $# -gt 0 ]]; do
@@ -30,14 +31,18 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# Single positional argument
+set +u
 PROJECT_NAME="$1"
-cd "${PROJECT_NAME}"
+set -u
 
 if [[ -z "$PROJECT_NAME" ]]; then
+    echo "---------------------------------------------------------"
     echo "Usage: build-and-run.sh [--verify|--clean] <project_name>"
+    echo "---------------------------------------------------------"
     exit 1
 fi
+
+cd "${PROJECT_NAME}"
 
 ARTIFACTS_FOLDER=artifacts
 CST_FILE="${PROJECT_NAME}.cst"
@@ -81,11 +86,11 @@ nextpnr-himbaechel \
 echo "-------------------------------"
 gowin_pack -d ${FAMILY} -o ${FS_FILE} ${PNR_FILE}
 
-exit 1
-# -------- UNTESTED FROM HERE ON --------
 # Program Board
 openFPGALoader -b ${BOARD} ${FS_FILE} -f
+exit 1
 
+# -------- UNTESTED FROM HERE ON --------
 # Generate Simulation
 iverilog -o app_test.o -s test app.v app_tb.v
 
