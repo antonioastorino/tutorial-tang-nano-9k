@@ -8,6 +8,7 @@ setopt +o nomatch
 # Defaults
 OPT_VERIFY=false
 OPT_CLEAN=false
+OPT_FLASH=false
 PROJECT_NAME=""
 
 # Parse flags
@@ -19,6 +20,10 @@ while [[ $# -gt 0 ]]; do
         ;;
     --clean)
         OPT_CLEAN=true
+        shift
+        ;;
+    --flash)
+        OPT_FLASH=true
         shift
         ;;
     -*)
@@ -36,9 +41,9 @@ PROJECT_NAME="$1"
 set -u
 
 if [[ -z "$PROJECT_NAME" ]]; then
-    echo "---------------------------------------------------------"
-    echo "Usage: build-and-run.sh [--verify|--clean] <project_name>"
-    echo "---------------------------------------------------------"
+    echo "-----------------------------------------------------------------"
+    echo "Usage: build-and-run.sh [--verify|--clean|--flash] <project_name>"
+    echo "-----------------------------------------------------------------"
     exit 1
 fi
 
@@ -87,7 +92,14 @@ echo "-------------------------------"
 gowin_pack -d ${FAMILY} -o ${FS_FILE} ${PNR_FILE}
 
 # Program Board
-openFPGALoader -b ${BOARD} ${FS_FILE} -f
+echo "Programming.."
+if [[ $OPT_FLASH = true ]]; then
+    # Write to FLASH
+    openFPGALoader -b ${BOARD} ${FS_FILE} -f
+else
+    # Write to SRAM
+    openFPGALoader -b ${BOARD} ${FS_FILE}
+fi
 exit 1
 
 # -------- UNTESTED FROM HERE ON --------
