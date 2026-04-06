@@ -70,14 +70,17 @@ files=(*.sv)
 
 if [[ $OPT_VERIFY = true ]]; then
     echo "--------------- Verifying ---------------"
-    verilator --lint-only *.sv
-    yosys -p "read_verilog $(echo ${files[@]}); hierarchy -top top; show top;"
+    verilator --lint-only -Wall *.sv
+    yosys -p "read_verilog -sv $(echo ${files[@]}); hierarchy -top top; show top;"
     echo "--------------- Verifying pass ---------------"
     exit 0
 fi
 
 echo " --------- YOSYS ------- "
-yosys -p "read_verilog $(echo ${files[@]}); hierarchy -top top; synth_gowin -json ${JSON_SYNTH}"
+yosys -p "read_verilog \
+    -sv $(echo ${files[@]}); \
+    hierarchy -top top; \
+    synth_gowin -top top -json ${JSON_SYNTH}"
 
 echo " --------- PLACE and ROUTE ------- "
 nextpnr-himbaechel \
@@ -100,14 +103,3 @@ else
     # Write to SRAM
     openFPGALoader -b ${BOARD} ${FS_FILE}
 fi
-exit 1
-
-# -------- UNTESTED FROM HERE ON --------
-# Generate Simulation
-iverilog -o app_test.o -s test app.v app_tb.v
-
-# Run Simulation
-vvp app_test.o
-
-# Cleanup build artifacts
-rm app.vcd app.fs app_test.o

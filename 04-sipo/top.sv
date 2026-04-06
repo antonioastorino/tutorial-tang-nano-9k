@@ -3,9 +3,10 @@ module top
         input wire sys_clk,
         input wire btn_s1,
         input wire  btn_s2,
-        output reg [5:0] leds
+        output wire [5:0] leds
     );
     parameter BITS = 6;
+    parameter MODE = 1;
     parameter FREQ = 4; // Frequency in Hz
     wire [BITS-1:0] sipo_val;
 
@@ -13,19 +14,19 @@ module top
     reg slow_clk;
 
     always @(posedge sys_clk) begin
-        count <= count + 1;
-        if (count == 27000000 / FREQ) begin
+        if (count >= (27000000 / FREQ - 1)) begin
             count <= 0;
-        end
-        if (count < (27000000 / 2 / FREQ)) begin
-            slow_clk <= 1;
         end else begin
-            slow_clk <= 0;
+            count <= count + 1;
         end
+        slow_clk <= (count < (27000000 / 2 / FREQ)) ?  1'b1 : 1'b0;
     end
 
     sipoNbits
-    #(.BITS(BITS))
+    #(
+        .BITS(BITS),
+        .MODE(MODE)
+    )
     sipo_inst
     (
         .clk(slow_clk),
@@ -34,11 +35,6 @@ module top
         .p_out(sipo_val)
     );
 
-    genvar i;
-    generate
-    for (i = 0; i < 6; i = i + 1) begin
-        assign leds[i] = sipo_val[i];
-    end
-    endgenerate
+    assign leds = sipo_val;
 
 endmodule

@@ -3,7 +3,7 @@ module top (
     input  wire btn_s1,     // reset button  - pin 4
     output wire  [5:0] led  // 6 LEDs        - pins 10,11,13,14,15,16
 );
-    parameter BITS = 20;
+    parameter BITS = 25;
     wire [BITS-1:0] counter_val;
     
     counter
