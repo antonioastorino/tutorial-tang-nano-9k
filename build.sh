@@ -72,6 +72,7 @@ if [[ $OPT_VERIFY = true ]]; then
     echo "--------------- Verifying ---------------"
     verilator --lint-only -Wall *.sv
     yosys -p "read_verilog -sv $(echo ${files[@]}); hierarchy -top top; show top;"
+    iverilog -DSIMULATION -o artifacts/alu_tb alu.sv alu_tb.sv && vvp artifacts/alu_tb
     echo "--------------- Verifying pass ---------------"
     exit 0
 fi
@@ -103,3 +104,4 @@ else
     # Write to SRAM
     openFPGALoader -b ${BOARD} ${FS_FILE}
 fi
+
