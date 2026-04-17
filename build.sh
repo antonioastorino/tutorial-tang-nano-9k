@@ -9,6 +9,7 @@ setopt +o nomatch
 OPT_VERIFY=false
 OPT_CLEAN=false
 OPT_FLASH=false
+PROJECT_FOLDER=""
 PROJECT_NAME=""
 
 # Parse flags
@@ -37,17 +38,18 @@ while [[ $# -gt 0 ]]; do
 done
 
 set +u
-PROJECT_NAME="$1"
+PROJECT_FOLDER="$1"
+PROJECT_NAME=${PROJECT_FOLDER#[0-9][0-9]-}
 set -u
 
 if [[ -z "$PROJECT_NAME" ]]; then
-    echo "-----------------------------------------------------------------"
-    echo "Usage: build-and-run.sh [--verify|--clean|--flash] <project_name>"
-    echo "-----------------------------------------------------------------"
+    echo "------------------------------------------------------------------"
+    echo "Usage: build-and-run.sh [--verify|--clean|--flash] <project_folder>"
+    echo "------------------------------------------------------------------"
     exit 1
 fi
 
-cd "${PROJECT_NAME}"
+cd "${PROJECT_FOLDER}"
 
 ARTIFACTS_FOLDER=artifacts
 CST_FILE="${PROJECT_NAME}.cst"
@@ -72,7 +74,12 @@ if [[ $OPT_VERIFY = true ]]; then
     echo "--------------- Verifying ---------------"
     verilator --lint-only -Wall *.sv
     yosys -p "read_verilog -sv $(echo ${files[@]}); hierarchy -top top; show top;"
-    iverilog -DSIMULATION -o artifacts/alu_tb alu.sv alu_tb.sv && vvp artifacts/alu_tb
+    iverilog \
+        -DSIMULATION \
+        -o artifacts/${PROJECT_NAME}_tb \
+        ${PROJECT_NAME}.sv \
+        ${PROJECT_NAME}_tb.sv &&
+        vvp artifacts/${PROJECT_NAME}_tb
     echo "--------------- Verifying pass ---------------"
     exit 0
 fi
@@ -104,4 +111,3 @@ else
     # Write to SRAM
     openFPGALoader -b ${BOARD} ${FS_FILE}
 fi
-
